@@ -6,24 +6,24 @@ const products = [
 ];
 
 
-let str = '';
+
 
 const renderProduct = (title = 'Some product', price = 1000, imageUrl = 'no image') => {
     
-    str += `<div class="product-item">
+    return `<div class="product-item">
                 <h3 class="heading">${title}</h3>
                 <img src = ${imageUrl}>
                 <p class="price-text">${price}</p>
                 <button class="by-btn">Добавить в корзину</button>
               </div>`;
              
-    return str;
 }
 
 const renderProducts = (list) => {
+    let str = '';
     const productList = list.forEach((item) => {
         //console.log(item.title, item.price);
-        return renderProduct(item.title, item.price, item.imageUrl);
+        return str += renderProduct(item.title, item.price, item.imageUrl);
     });
     document.querySelector('.products').innerHTML = str;
     //console.log(productList);
