@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burgers</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="center">
+
+    
+        <div class="choice">
+            <div class="choice-block">
+            <div class="block">
+                <p class="block-text">Размер:</p>
+                <div class="input-block">
+                    <input type="radio" id="small_size" name="size" value="small" data-price="50" data-energy="20" checked>
+                    <label for="small_size">Маленький</label>
+                </div>
+                <div class="input-block">
+                    <input type="radio" id="large_size" name="size" value="large" data-price="100" data-energy="40">
+                    <label for="large_size">Большой</label>
+                </div>
+            </div>
+
+            <div class="block">
+                <p class="block-text">Начинка:</p>
+                <div class="input-block">
+                    <input type="radio" id="cheese_fill" name="filling" value="cheese" data-price="10" data-energy="20" checked>
+                    <label for="cheese_fill">Сыр</label>
+                </div>
+                <div class="input-block">
+                    <input type="radio" id="salad_fill" name="filling" value="salad" data-price="20" data-energy="5">
+                    <label for="salad_fill">Салат</label>
+                </div>
+                <div class="input-block">
+                    <input type="radio" id="potato_fill" name="filling" value="potato" data-price="15" data-energy="10">
+                    <label for="potato_fill">Картофель</label>
+                </div>
+            </div>
+
+            <div class="block">
+                <p class="block-text">Добавить:</p>
+                <div class="input-block">
+                    <input type="checkbox" id="spice_top" name="topping" value="spice" data-price="15" data-energy="0" checked>
+                    <label for="spice_top">Специи</label>
+                </div>
+                <div class="input-block">
+                    <input type="checkbox" id="souse_top" name="topping" value="souse" data-price="20" data-energy="5">
+                    <label for="souse_top">Майонез</label>
+                </div>
+            </div>
+        </div>
+            <button type="submit" class="button">Рассчитать</button>
+
+    </div>
+   
+
+     <div class="result">
+         <p>Заплатите <span class="totalPrice"></span> руб.</p>
+         <p>Съешьте <span class="totalEnergy"></span> ккал.</p>
+     </div>
+
+    </div>
+    <script src="main.js"></script>
+</body>
+
+</html>
