@@ -20,15 +20,16 @@ const getRequest = (url, callBack) => {
 
 
 class ProductList {
-    #goods;
-    #allProducts;
+    goods;
+    allProducts;
 
     constructor(container = '.products') {
         this.container = container;
-        this.#goods = [];
-        this.#allProducts = [];
+        this.goods = [];
+        this.allProducts = [];
 
-        this.#fetchGoods();
+        this.fetchGoods();
+        this._init();
         //this.#render();
         // this.#getProducts()
         //     .then((data) => {
@@ -37,13 +38,31 @@ class ProductList {
         //     });
     }
 
+    _init() {
+        document.querySelector(this.container).addEventListener('click', (event) => {
+          
+            if (event.target.classList.contains('by-btn')) {
+                const div = event.target.parentNode;
+                cartList.addItem(productList.getItem(div.getAttribute('data-id')));
+            }
+        });
 
-    #fetchGoods() {
+        document.querySelector('.search-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            this.filter(document.querySelector('.search-field').value);
+          });
+    }
+
+
+    fetchGoods() {
 
         getRequest(`${API}/catalogData.json`, (data) => {
 
-            this.#goods = JSON.parse(data);
-            this.#render();
+            let items = JSON.parse(data);
+
+            this.goods = [...items];
+           
+            this.render();
             
         });
     }
@@ -64,17 +83,18 @@ class ProductList {
     //         });
     // }
 
-    #render() {
+    render() {
         const block = document.querySelector(this.container);
 
-        this.#goods.forEach((product) => {
+        this.goods.forEach((product) => {
             const productObject = new ProductItem(product);
-            this.#allProducts.push(productObject);
-            let html = `<div class="product-item" data-id="${productObject.id}">
-                        <h3 class="heading">${productObject.title}</h3>
+            this.allProducts.push(productObject);
+
+            let html = `<div class="product-item" data-id="${productObject.id_product}">
+                        <h3 class="heading">${productObject.product_name}</h3>
                         <img src = 'https://placehold.it/200x150'>
                         <p class="price-text">${productObject.price}</p>
-                        <button onclick="cartList.addItem(productList.getItem(${productObject.id}));" class="by-btn">Добавить в корзину</button>
+                        <button class="by-btn">Добавить в корзину</button>
                         </div>`;
             block.insertAdjacentHTML('beforeend', html);
         });
@@ -83,7 +103,7 @@ class ProductList {
     
     calcTotalPrice() {
         let totalPrice = 0;
-        this.#allProducts.forEach((product) => totalPrice += product.price);
+        this.allProducts.forEach((product) => totalPrice += product.price);
         return totalPrice;
     }
 
@@ -92,9 +112,9 @@ class ProductList {
     }
     getItem(id) { 
         let a;
-        this.#allProducts.forEach((item) => {
+        this.allProducts.forEach((item) => {
 
-            if (item.id == id) {
+            if (item.id_product == id) {
                 a = item;
                 return item;
             }
@@ -104,31 +124,59 @@ class ProductList {
         return a;
     }
 
+    filter(value){
+        const regexp = new RegExp(value, 'i');
+        this.filtered = this.allProducts.filter(product => regexp.test(product.product_name));
+        this.allProducts.forEach(elem => {
+          const block = document.querySelector(`.product-item[data-id="${elem.id_product}"]`);
+          
+          if(!this.filtered.includes(elem)){
+            block.classList.add('invisible');
+          } else {
+            block.classList.remove('invisible');
+          }
+        })
+      }
+
+    
+
 }
 
 class ProductItem {
     constructor(product, img = 'https://placehold.it/200x150') {
-        this.title = product.product_name;
+        this.product_name = product.product_name;
         this.price = product.price;
-        this.id = product.id_product;
+        this.id_product = product.id_product;
         this.img = img;
     }
 
 }
 
-const productList = new ProductList();
-
-
 
 class CartList {
     constructor(container = '.cart-products') {
         this.isEmpty = true;
-        this.goods = [];
+        this.goodsCart = [];
         this.container = container;
+        this._init();
     }
 
+    _init() {
 
+        document.querySelector('.cart-btn').addEventListener('click', () => {
+            document.querySelector(this.container).classList.toggle('invisible');
+          });
 
+        document.querySelector(this.container).addEventListener('click', (event) => {
+          
+            if (event.target.classList.contains('delete')) {
+                const div = event.target.parentNode;
+                
+                cartList.removeItem(productList.getItem(div.parentNode.getAttribute('data-id')));
+                
+            }
+        });
+    }
 
     //добавить товар в корзину
     addItem(item) {
@@ -141,9 +189,26 @@ class CartList {
         }); 
         
         response.then((result) => {
-            if (result == 1) {
-            this.goods.push(item);
-            this.render();
+            if (result === 1) {
+                let productId = item.id_product;
+                let find = this.goodsCart.find(product => product.id_product === productId);
+                if (find) {
+                    find.quantity++;
+                    this.updateCart(find);
+                } else {
+                let product = {
+                        id_product: productId,
+                        price: item.price,
+                        product_name: item.product_name,
+                        quantity: 1
+                };
+
+                    const cartObject = new CartItem(product);
+                    this.goodsCart.push(cartObject);
+
+                    this.render();
+                }
+                        
             }
         });
                       
@@ -154,41 +219,43 @@ class CartList {
         let response = getRequest(`${API}/deleteFromBasket.json`, (data) => {
 
             return JSON.parse(data).result;
-            
-           
+                  
          }); 
 
          response.then((result) => {
-            if (result == 1) {
+            if (result === 1) {
 
-            let done = false;
-            this.goods.forEach((goods) => {
-           
-            if (goods.id == item.id && !done) {
-                let index = this.goods.indexOf(goods);
-                this.goods.splice(index, 1);
-                 
-                done = true;
+                let productId = item.id_product;
+                let find = this.goodsCart.find(product => product.id_product === productId);
+                if (find.quantity > 1) {
+                    find.quantity--;
+                    this.updateCart(find);
+
+                } else {
+                    this.goodsCart.splice(this.goodsCart.indexOf(find), 1);
+                    document.querySelector(`.cart-item[data-id="${productId}"]`).remove();
+                }
+
             }
         
             });
-        this.render();
+        
     }
-    });
-    } 
+    
+     
 
     render() {
         const block = document.querySelector(this.container);
         block.innerHTML = '';
         
-        this.goods.forEach((product) => {
+        this.goodsCart.forEach((product) => {
          
-            let html = `<div class="cart-item" data-id="${product.id}">
+            let html = `<div class="cart-item" data-id="${product.id_product}">
             <div class="desc">
-            <h3>${product.title}</h3>
+            <h3>${product.product_name}</h3>
             <p>${product.price} \u20bd</p>
-           
-            <button onclick="cartList.removeItem(productList.getItem(${product.id}));"  class="by-btn">Удалить из корзины</button>
+           <p class="product-quantity">Количество: ${product.quantity}</p>
+            <button onclick="cartList.removeItem(productList.getItem(${product.id_product}));"  class="by-btn">Удалить из корзины</button>
              </div>
         </div>`;
             block.insertAdjacentHTML('beforeend', html);
@@ -199,46 +266,27 @@ class CartList {
     //сумма всех товаров в корзине
     calcSumPrice() {
         let totalPrice = 0;
-        this.goods.forEach((product) => totalPrice += product.price);
+        this.goodsCart.forEach((product) => totalPrice += product.price);
         return totalPrice;
     }
-    clearCart() {} //очистить корзину
-    updateCart() {} //обновить корзину
+   
+    updateCart(product) {
+        let block = document.querySelector(`.cart-item[data-id="${product.id_product}"]`);
+        block.querySelector('.product-quantity').textContent = `Количество: ${product.quantity}`;
+    } //обновить корзину
 }
 
-// class CartItem {
-//     constructor(product, quantity = 1) {
-//         this.title = product.title;
-//         this.price = product.price;
-//         this.id = product.id;
-//         this.quantity = quantity;
+class CartItem {
+    constructor(product) {
+        this.product_name = product.product_name;
+        this.price = product.price;
+        this.id_product = product.id_product;
+        this.quantity = product.quantity;
 
-//     }
+    }
+
+}
 
 
-
-//     render() {
-//         return `<div class="cart-item" data-id="${this.id}">
-//         <div class="desc">
-//         <h3>${this.title}</h3>
-//         <p>${this.price} \u20bd</p>
-//         <p>${this.quantity} шт.</p>
-//         <button onclick="cartList.removeItem(productList.getItem(${this.id}));"  class="by-btn">Удалить из корзины</button>
-//          </div>
-//     </div>`; 
-//     }
-
-//     //quantityChange() {} //изменить количество заказанного товара
-//     //getPrice() {} //получить цену товара с учетом количества
-
-// }
+const productList = new ProductList();
 const cartList = new CartList();
-
-
-document.querySelectorAll('.by-btn').forEach((item) => {
-    item.addEventListener('click', function (event) {
-        const elemId = event.target.closest('.product-item').getAttribute('data-id');
-        console.log(elemId);
-
-    });
-});
