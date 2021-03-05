@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Интернет-магазин</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+    <header class="center header">
+
+        <form action="#" class="search-form">
+            <input type="text" class="search-field"  v-model="search">
+            <button class="btn-search" type="submit" @click="filter({ search })">
+               Найти
+            </button>
+        </form>
+
+        <button class="cart-btn" type="button" v-on:click="isVisibleCart = !isVisibleCart">Корзина</button>
+
+        <template v-if="isVisibleCart">
+        <div class="cart-products">
+            <div class="cart-item" :data-id="product.id_product" v-for="product of goodsCart" :key="product.id_product" >
+                <h3>{{ product.product_name }}</h3>
+                <p>{{ product.price }}</p>
+                <p>{{ product.quantity }}</p>
+                <button class="by-btn delete" @click="removeItem(product)">Удалить из корзины</button>
+            </div>
+        </div>
+        </template>
+        
+    </header>
+    <main>
+        <div class="center">
+
+            <h3 class="not-found" v-if="notFound"> Товары не найдены </h3>
+
+            <div class="found-products" v-for="product of filtered" :key="product.id_product">
+                <div class="product-item">
+                    <img :src="imgCatalog" alt="Some img">
+                    <h3>{{ product.product_name }}</h3>
+                    <p>{{ product.price }}</p>
+                    <button class="by-btn" @click="addItem(product)">Купить</button>
+                    
+                </div>
+            </div>
+            <div class="products">
+                <div class="product-item" :class="{invisible: isHiddenProducts}" v-for="product of products" :key="product.id_product">
+                    <img :src="imgCatalog" alt="Some img">
+                    <h3>{{ product.product_name }}</h3>
+                    <p>{{ product.price }}</p>
+                    <button class="by-btn" @click="addItem(product)">Купить</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+
+    <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js" integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="main.js"></script>
+    
+</body>
+
+</html>
