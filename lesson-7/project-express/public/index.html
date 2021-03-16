@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интернет-магазин</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        
+        <header class="center header">
+
+            <search ref="search"></search>
+
+            <error ref="error"></error>
+
+            <cart ref="cart"></cart>
+
+        </header>
+
+        <main class="center header">
+           
+            <products ref="products"></products>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    
+    <script src="js/SearchComp.js"></script>
+    <script src="js/CartComp.js"></script>
+    <script src="js/ProductComp.js"></script>
+    <script src="js/ErrorComp.js"></script>
+    <script src="js/main.js"></script>
+    
+    
+</body>
+</html>
