@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+   
+    <div id="app">
+        <div class="wrapper">
+            <header class="header center">
+                <div class="header__left">
+                    <a href="index.html"><img src="img/logo.svg" alt="logo"></a>
+                    <search ref="search"></search>
+                </div>
+                <div class="header__right">
+    
+                    <cart ref="cart"></cart>
+                    
+                </div>
+            </header>
+    
+            <nav-comp ref="nav-comp"></nav-comp>
+            <div class="cart center">
+
+                <div class="page-cart__products">
+                    <cart-page ref="cart-page"></cart-page>
+                </div>
+
+                <div class="cart__checkout">
+                    <cart-form ref="cart-form"></cart-form>
+                </div>
+            </div>
+             
+            <myfooter ref="myfooter"></myfooter>         
+            
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    
+    <script src="js/SearchComp.js"></script>
+    <script src="js/CartComp.js"></script>
+    <script src="js/FormComp.js"></script>
+    <script src="js/NavComp.js"></script>
+    <script src="js/ProductComp.js"></script>
+    <script src="js/ErrorComp.js"></script>
+    <script src="js/FooterComp.js"></script>
+    <script src="js/CartPageComp.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
